@@ -1,4 +1,4 @@
-# Nome do Projeto
+# Geração de sprites
 
 Projeto para geração se sprites com letras digitadas
 
