@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rotação 3D de Texto</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    #canvas {
+      width: 100%;
+      height: 100%;
+    }
+    #font-selector {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 9999;
+    }
+    #info-box {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 200px;
+      height: 100px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 5px;
+      padding: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas"></div>
+  <select id="font-selector">
+    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json">Helvetiker</option>
+    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/optimer_regular.typeface.json">Optimer</option>
+    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/gentilis_regular.typeface.json">Gentilis</option>
+    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_serif_regular.typeface.json">Droid Serif</option>
+    <option value="fonts/MALDINI_Regular.json">MALDINI</option>
+    <option value="https://fonts.googleapis.com/json?family=Poppins">Poppins</option>
+
+  </select>
+  
+  <div id="info-box"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Configuração da cena
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById("canvas").appendChild(renderer.domElement);
+
+    // Criação do texto
+    let textMesh; // Declaramos a variável globalmente para acessá-la em diferentes funções
+    let font; // Declaramos a variável global para armazenar a fonte selecionada
+
+    const fontSelector = document.getElementById("font-selector");
+
+    fontSelector.addEventListener("change", function() {
+      const fontUrl = fontSelector.value;
+      loadFont(fontUrl);
+    });
+
+    function loadFont(url) {
+      const fontLoader = new THREE.FontLoader();
+      fontLoader.load(url, function (loadedFont) {
+        font = loadedFont; // Armazena a fonte carregada na variável global
+        createText('A'); // Cria o texto inicial com a letra "A"
+      });
+    }
+
+    loadFont(fontSelector.value); // Carrega a fonte inicialmente
+
+    // Configuração da iluminação
+    const ambientLight = new THREE.AmbientLight(0x654c00, 0.5);
+    const directionalLight = new THREE.DirectionalLight(0xd4a000, 0.5);
+    directionalLight.position.set(0, 1, 1);
+
+    scene.add(ambientLight);
+    scene.add(directionalLight);
+
+    // Configuração do fundo branco
+    const backgroundGeometry = new THREE.PlaneGeometry(160, 160);
+    const backgroundMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const backgroundMesh = new THREE.Mesh(backgroundGeometry, backgroundMaterial);
+    backgroundMesh.position.z = -100;
+    scene.add(backgroundMesh);
+
+    let shouldRotate = false; // Variável para controlar se a rotação deve ser aplicada ou não
+    let rotationTime = 0;
+    const rotationDuration = 1; // Duração da rotação em milissegundos
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (shouldRotate && rotationTime <= rotationDuration) {
+        textMesh.rotation.y += Math.PI * 0.2; // Altere o valor para ajustar a velocidade de rotação (0.1) padrao
+        rotationTime += 16; // 16 milissegundos é aproximadamente o tempo entre cada quadro renderizado
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // Função para iniciar a rotação quando a tecla "r" é pressionada
+    function startRotation() {
+      rotationTime = 0;
+      shouldRotate = true;
+    }
+
+    // Função para alterar letra quando a tecla "l" é pressionada
+    function AlterarLetra() {
+      const letter = prompt('Digite a letra que deseja exibir:'); // Exibe um prompt para obter a letra do usuário
+
+      if (letter && font) {
+        createText(letter); // Cria o novo texto com a letra fornecida pelo usuário
+        shouldRotate = false; // Desativa a rotação
+      }
+    }
+
+    // Função para criar o texto
+    function createText(letter) {
+      if (textMesh) {
+        scene.remove(textMesh); // Remove o texto anterior, se existir
+      }
+
+      const textGeometry = new THREE.TextGeometry(letter, {
+        font: font,
+        size: 80,
+        height: 5,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 10,
+        bevelSize: 8,
+        bevelOffset: 0,
+        bevelSegments: 5
+      });
+
+      textGeometry.center(); // Centraliza a geometria do texto
+
+      const textMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffffff, // Cor do texto
+        specular: 0xffd700, // Especifica a cor do brilho especular (dourado)
+        shininess: 100 // Controla a intensidade do brilho especular
+      });
+
+      textMesh = new THREE.Mesh(textGeometry, textMaterial);
+      textMesh.rotation.set(0, 0, 0); // Define a rotação inicial como 0 nos eixos x, y e z
+      textMesh.position.set(0, 0, 0); // Define a posição inicial como 0 nos eixos x, y e z
+      scene.add(textMesh);
+    }
+
+    // Evento para chamar a função de início de rotação quando a tecla "r" é pressionada
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'r') {
+        startRotation();
+      } else if (event.key === 'l') {
+        AlterarLetra();
+      } 
+    });
+
+    // Configuração da câmera
+    camera.position.z = 400;
+  </script>
+</body>
+</html>
