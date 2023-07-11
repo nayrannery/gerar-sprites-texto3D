@@ -13,7 +13,7 @@ Projeto para geração se sprites com letras digitadas
 1. Clone o repositório do projeto:
 
    ```bash
-   git clone https://github.com/nayrannery/gerar-sprites-texto3D.git
+   git clone (https://github.com/nayrannery/gerar-sprites-texto3D.git)
    ```
 
 2. Navegue até a pasta do projeto:
