@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Rotação 3D de Texto</title>
   <style>
@@ -7,16 +8,19 @@
       margin: 0;
       overflow: hidden;
     }
+
     #canvas {
       width: 100%;
       height: 100%;
     }
+
     #font-selector {
       position: absolute;
       top: 10px;
       left: 10px;
       z-index: 9999;
     }
+
     #info-box {
       position: absolute;
       top: 10px;
@@ -30,22 +34,38 @@
     }
   </style>
 </head>
+
 <body>
   <div id="canvas"></div>
   <select id="font-selector">
-    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json">Helvetiker</option>
+    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json">Helvetiker
+    </option>
     <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/optimer_regular.typeface.json">Optimer</option>
     <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/gentilis_regular.typeface.json">Gentilis</option>
-    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_serif_regular.typeface.json">Droid Serif</option>
+    <option value="https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_serif_regular.typeface.json">Droid
+      Serif</option>
     <option value="fonts/MALDINI_Regular.json">MALDINI</option>
-    <option value="https://fonts.googleapis.com/json?family=Poppins">Poppins</option>
+    <option value="fonts/Beauty.json">Beauty</option>
+
 
   </select>
-  
+
   <div id="info-box"></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
+
+    // Definir os tamanhos de fonte para cada opção do seletor
+    const fontSizes = {
+      "https://cdn.jsdelivr.net/npm/three/examples/fonts/helvetiker_regular.typeface.json": 80,
+      "https://cdn.jsdelivr.net/npm/three/examples/fonts/optimer_regular.typeface.json": 80,
+      "https://cdn.jsdelivr.net/npm/three/examples/fonts/gentilis_regular.typeface.json": 80,
+      "https://cdn.jsdelivr.net/npm/three/examples/fonts/droid/droid_serif_regular.typeface.json": 80,
+      "fonts/MALDINI_Regular.json": 80,
+      "fonts/Beauty.json": 40
+    };
+
+
     // Configuração da cena
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -59,7 +79,7 @@
 
     const fontSelector = document.getElementById("font-selector");
 
-    fontSelector.addEventListener("change", function() {
+    fontSelector.addEventListener("change", function () {
       const fontUrl = fontSelector.value;
       loadFont(fontUrl);
     });
@@ -122,15 +142,23 @@
       }
     }
 
+   
     // Função para criar o texto
     function createText(letter) {
       if (textMesh) {
         scene.remove(textMesh); // Remove o texto anterior, se existir
       }
+      
+      const fontUrl = fontSelector.value;
+      let size;
 
-      const textGeometry = new THREE.TextGeometry(letter, {
+      if (fontUrl === "fonts/Beauty.json") {
+        size = 40;
+      }
+
+        const textGeometry = new THREE.TextGeometry(letter, {
         font: font,
-        size: 80,
+        size: size,
         height: 5,
         curveSegments: 12,
         bevelEnabled: true,
@@ -139,6 +167,8 @@
         bevelOffset: 0,
         bevelSegments: 5
       });
+      
+
 
       textGeometry.center(); // Centraliza a geometria do texto
 
@@ -155,16 +185,17 @@
     }
 
     // Evento para chamar a função de início de rotação quando a tecla "r" é pressionada
-    document.addEventListener('keydown', function(event) {
+    document.addEventListener('keydown', function (event) {
       if (event.key === 'r') {
         startRotation();
       } else if (event.key === 'l') {
         AlterarLetra();
-      } 
+      }
     });
 
     // Configuração da câmera
     camera.position.z = 400;
   </script>
 </body>
+
 </html>
